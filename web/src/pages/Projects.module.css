@@ -1,0 +1,24 @@
+.page {
+  padding-top: clamp(120px, 18vh, 200px);
+}
+.head {
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 40px;
+  margin-bottom: clamp(40px, 6vw, 64px);
+}
+.title {
+  font-size: clamp(56px, 11vw, 150px);
+  margin: 14px 0 24px;
+}
+.copy {
+  max-width: 540px;
+  color: var(--muted);
+  font-size: clamp(15px, 1.5vw, 17px);
+  line-height: 1.7;
+  font-weight: 300;
+}
+.grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}

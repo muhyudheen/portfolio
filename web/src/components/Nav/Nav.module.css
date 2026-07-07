@@ -1,0 +1,101 @@
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 200;
+  padding: 22px var(--gutter);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: top 0.45s var(--ease), left 0.45s var(--ease), right 0.45s var(--ease),
+    padding 0.45s var(--ease), border-radius 0.45s var(--ease), background 0.4s ease,
+    backdrop-filter 0.4s ease, box-shadow 0.4s ease;
+}
+
+.scrolled {
+  top: 16px;
+  left: clamp(16px, 18vw, 22%);
+  right: clamp(16px, 18vw, 22%);
+  padding: 13px 28px;
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--border);
+}
+
+.logo {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.right {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.links {
+  display: flex;
+  gap: 28px;
+}
+.links a {
+  position: relative;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  transition: color 0.3s;
+}
+.links a::after {
+  content: '';
+  position: absolute;
+  bottom: -3px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--fg);
+  transition: width 0.3s ease;
+}
+.links a:hover {
+  color: var(--fg);
+}
+.links a:hover::after {
+  width: 100%;
+}
+
+.themeBtn {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  padding: 7px 15px;
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+.themeBtn:hover {
+  background: var(--fg);
+  color: var(--bg);
+  border-color: var(--fg);
+}
+.icon {
+  font-size: 13px;
+}
+
+@media (max-width: 720px) {
+  .links {
+    display: none;
+  }
+  .scrolled {
+    left: 14px;
+    right: 14px;
+  }
+}
