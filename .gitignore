@@ -35,7 +35,7 @@ pnpm-debug.log*
 .idea/
 .vscode/*
 !.vscode/extensions.json
-*:Zone.Identifier
+*Zone.Identifier
 
 # --- Build / coverage ---
 coverage/
