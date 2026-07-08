@@ -1,5 +1,6 @@
 import { Link, useParams } from 'react-router-dom';
 import { getProject } from '@/data/profile';
+import { useDocumentMeta } from '@/hooks/useDocumentMeta';
 import NotFound from './NotFound';
 import styles from './ProjectDetail.module.css';
 
@@ -12,6 +13,11 @@ const STATUS_LABEL = {
 export default function ProjectDetail() {
   const { slug } = useParams();
   const project = slug ? getProject(slug) : undefined;
+
+  useDocumentMeta({
+    title: project ? project.name : 'Project not found',
+    description: project?.tagline,
+  });
 
   if (!project) return <NotFound />;
 

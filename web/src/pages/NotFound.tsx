@@ -1,7 +1,10 @@
 import { Link } from 'react-router-dom';
+import { useDocumentMeta } from '@/hooks/useDocumentMeta';
 
 /** Fixes the original's dead /showcase link with a real 404. */
 export default function NotFound() {
+  useDocumentMeta({ title: 'Page not found' });
+
   return (
     <section
       className="container"

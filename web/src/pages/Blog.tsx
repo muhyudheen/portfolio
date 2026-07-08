@@ -1,9 +1,16 @@
 import { Link } from 'react-router-dom';
 import { blogs } from '@/data/blogs';
 import Reveal from '@/components/Reveal/Reveal';
+import { useDocumentMeta } from '@/hooks/useDocumentMeta';
 import styles from './Blog.module.css';
 
 export default function Blog() {
+  useDocumentMeta({
+    title: 'Blog',
+    description:
+      'Writing about AI, engineering, systems, and portfolio projects by Muhammed Muhyudheen.',
+  });
+
   return (
     <section className={`section container ${styles.page}`}>
       <header className={styles.hero}>

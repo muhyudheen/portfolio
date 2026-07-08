@@ -22,8 +22,9 @@ export default function Layout() {
   useScrollBehavior();
   return (
     <>
+      <a href="#main" className="skip-link">Skip to content</a>
       <Nav />
-      <main id="top">
+      <main id="main">
         <Outlet />
       </main>
       <Footer />

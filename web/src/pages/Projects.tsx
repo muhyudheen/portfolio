@@ -1,9 +1,16 @@
 import { projects } from '@/data/profile';
 import Reveal from '@/components/Reveal/Reveal';
 import ProjectCard from '@/components/ProjectCard/ProjectCard';
+import { useDocumentMeta } from '@/hooks/useDocumentMeta';
 import styles from './Projects.module.css';
 
 export default function Projects() {
+  useDocumentMeta({
+    title: 'Projects',
+    description:
+      'Machine learning, agentic AI, and backend systems by Muhammed Muhyudheen — from regulatory monitoring to race-strategy prediction.',
+  });
+
   return (
     <section className={`section container ${styles.page}`}>
       <header className={styles.head}>

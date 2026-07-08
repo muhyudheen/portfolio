@@ -2,6 +2,7 @@ import { Link, useParams } from 'react-router-dom';
 import { getBlog } from '@/data/blogs';
 import type { Block } from '@/data/blogs';
 import BlogEngagement from '@/components/BlogEngagement/BlogEngagement';
+import { useDocumentMeta } from '@/hooks/useDocumentMeta';
 import NotFound from './NotFound';
 import styles from './BlogPost.module.css';
 
@@ -30,6 +31,11 @@ function renderBlock(block: Block, i: number) {
 export default function BlogPost() {
   const { slug } = useParams();
   const blog = slug ? getBlog(slug) : undefined;
+
+  useDocumentMeta({
+    title: blog ? blog.title : 'Post not found',
+    description: blog?.excerpt,
+  });
 
   if (!blog) return <NotFound />;
 

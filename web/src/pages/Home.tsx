@@ -3,11 +3,17 @@ import { Link } from 'react-router-dom';
 import { profile, marquee, projects, aboutBio, education, skills } from '@/data/profile';
 import Reveal from '@/components/Reveal/Reveal';
 import ProjectCard from '@/components/ProjectCard/ProjectCard';
+import { useDocumentMeta } from '@/hooks/useDocumentMeta';
 import styles from './Home.module.css';
 
 const ease = [0.25, 0.46, 0.45, 0.94] as const;
 
 export default function Home() {
+  useDocumentMeta({
+    title: `${profile.name} — ${profile.role}`,
+    description: profile.tagline,
+  });
+
   return (
     <>
       {/* ----------------------------- HERO ----------------------------- */}
