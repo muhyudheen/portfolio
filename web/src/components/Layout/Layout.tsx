@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import Nav from '@/components/Nav/Nav';
 import Footer from '@/components/Footer/Footer';
+import ChatWidget from '@/components/ChatWidget/ChatWidget';
 
 /** Scroll to top on navigation, or to the hash target if one is present. */
 function useScrollBehavior() {
@@ -28,6 +29,7 @@ export default function Layout() {
         <Outlet />
       </main>
       <Footer />
+      <ChatWidget />
     </>
   );
 }

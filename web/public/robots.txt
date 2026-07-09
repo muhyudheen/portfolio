@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# After deploy, replace the host below with your real domain.
+Sitemap: https://REPLACE-WITH-YOUR-DOMAIN/sitemap.xml
