@@ -7,7 +7,7 @@ proxy, ...). Configure via environment:
     LLM_API_KEY   - API key / bearer token
                     (falls back to GEMINI_API_KEY / GOOGLE_API_KEY / OPENAI_API_KEY)
     LLM_BASE_URL  - default https://generativelanguage.googleapis.com/v1beta/openai
-    LLM_MODEL     - default gemini-2.0-flash
+    LLM_MODEL     - default gemini-2.5-flash
 
 If no key is set, replies with a friendly fallback so the widget still works.
 """
@@ -28,7 +28,7 @@ LLM_API_KEY = (
 LLM_BASE_URL = os.getenv(
     "LLM_BASE_URL", "https://generativelanguage.googleapis.com/v1beta/openai"
 ).rstrip("/")
-LLM_MODEL = os.getenv("LLM_MODEL", "gemini-2.0-flash")
+LLM_MODEL = os.getenv("LLM_MODEL", "gemini-2.5-flash")
 
 MAX_HISTORY = 10
 
