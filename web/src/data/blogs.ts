@@ -26,8 +26,8 @@ export const blogs: Blog[] = [
   {
     slug: 'lawhook-regulatory-circulars',
     title: 'Nobody Reads Regulatory Circulars. So I Built Something That Does.',
-    date: 'June 18, 2026',
-    dateTime: '2026-06-18',
+    date: 'July 14, 2026',
+    dateTime: '2026-07-14',
     excerpt:
       'Lawhook is a regulatory monitoring project built around scrapers, webhooks, reliable delivery, and practical AI where it actually adds value.',
     tags: ['Lawhook', 'RegTech', 'Scrapers', 'Webhooks'],
@@ -90,7 +90,6 @@ Signed webhook  →  your endpoint` },
       { type: 'h2', text: 'What’s next?' },
       { type: 'p', text: 'Right now I am building jurisdiction scrapers and the infrastructure around them. The goal is simple: get regulatory updates from source to user as quickly and reliably as possible. No noise. No endless searching. No surprise fines. Just updates that matter. And hopefully fewer compliance-induced heart attacks.' },
       { type: 'p', text: 'So that is Lawhook: a project born from boredom, built because regulatory monitoring is painful, and powered mostly by scrapers, webhooks, networking, and stubbornness. Until then, it is me, a terminal window, several cups of tea, and a growing collection of scraper scripts.' },
-      { type: 'p', text: 'Or as we say in Kerala developer dialect… Lawhhok. 😎' },
     ],
   },
 ];
