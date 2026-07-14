@@ -8,7 +8,8 @@ export type Block =
   | { type: 'p'; text: string }
   | { type: 'h2'; text: string }
   | { type: 'ul'; items: string[] }
-  | { type: 'ol'; items: string[] };
+  | { type: 'ol'; items: string[] }
+  | { type: 'code'; text: string };
 
 export type Blog = {
   slug: string;
@@ -53,13 +54,38 @@ export const blogs: Blog[] = [
       { type: 'ul', items: ['Scrapers', 'Webhooks', 'Reliable delivery systems', 'Good networking'] },
       { type: 'p', text: 'That is it. No magical AI kingdom. No army of autonomous agents. Just systems that do their job.' },
       { type: 'p', text: 'There are roughly 190+ countries in the world, many with different regulators and jurisdictions. Lawhook launches scrapers at intervals, detects changes, processes the updates, and delivers them directly to user webhooks. AI is used where it adds value, not where it looks cool in a demo. Honestly, AI is only a small percentage of the project. The interesting engineering is everything around it.' },
+      { type: 'p', text: 'The whole pipeline is deliberately boring:' },
+      { type: 'code', text: `Regulator sources  (RBI · SEBI · SEC · MAS · ASIC)
+
+        │  scrape — demand-driven, cadence set by subscriber tier
+
+        ▼
+
+Change detection  (content hash — only real changes pass)
+
+        │
+
+        ▼
+
+AI diff + severity  (added / removed / modified + plain-English summary)
+
+        │
+
+        ▼
+
+Match subscriptions  (jurisdiction · industry · severity threshold)
+
+        │
+
+        ▼
+
+Signed webhook  →  your endpoint` },
 
       { type: 'h2', text: 'The less glamorous part nobody talks about' },
       { type: 'p', text: 'The fun part isn’t scraping. The hard part starts after scraping. You have to think about:' },
       { type: 'ul', items: ['SSRF', 'XSS', 'Slowloris attacks', 'TLS validation', 'SNI handling', 'Rate limiting', 'Retry systems', 'Secure webhook delivery'] },
       { type: 'p', text: 'Every script I write goes through multiple rounds of review. My process looks something like this:' },
-      { type: 'ol', items: ['Discuss architecture with Claude', 'Write the implementation', 'Ask another LLM to break it', 'Fix the issues', 'Manual review', 'Enter what I call Einstein Mode™', 'Review everything again'] },
-      { type: 'p', text: 'Because the best security vulnerability is the one you never deploy.' },
+      { type: 'ol', items: ['I design the architecture, pressure-testing it against LLMs to find holes before writing a line', 'I write the implementation myself', 'I have an LLM try to break it, attack the auth, the validation, the edge cases', 'I fix what it finds', 'Manual review', 'Review again, because the best security vulnerability is the one you never deploy'] },
 
       { type: 'h2', text: 'What’s next?' },
       { type: 'p', text: 'Right now I am building jurisdiction scrapers and the infrastructure around them. The goal is simple: get regulatory updates from source to user as quickly and reliably as possible. No noise. No endless searching. No surprise fines. Just updates that matter. And hopefully fewer compliance-induced heart attacks.' },

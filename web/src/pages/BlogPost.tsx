@@ -22,6 +22,12 @@ function renderBlock(block: Block, i: number) {
           {block.items.map((item) => <li key={item}>{item}</li>)}
         </ol>
       );
+    case 'code':
+      return (
+        <pre key={i} className={styles.pre}>
+          <code>{block.text}</code>
+        </pre>
+      );
     case 'p':
     default:
       return <p key={i}>{block.text}</p>;

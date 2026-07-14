@@ -112,3 +112,18 @@
   font-weight: 700;
   color: var(--accent);
 }
+.pre {
+  margin: 0 0 26px;
+  padding: 22px 24px;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow-x: auto;
+}
+.pre code {
+  font-family: ui-monospace, 'SFMono-Regular', 'Menlo', 'Consolas', monospace;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--fg);
+  white-space: pre;
+}
