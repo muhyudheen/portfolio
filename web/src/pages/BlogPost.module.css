@@ -127,3 +127,30 @@
   color: var(--fg);
   white-space: pre;
 }
+
+/* inline formatting inside article prose */
+.content p strong {
+  color: var(--fg);
+  font-weight: 600;
+}
+.content p em {
+  font-style: italic;
+}
+.content p a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: opacity 0.2s ease;
+}
+.content p a:hover {
+  opacity: 0.75;
+}
+.inlineCode {
+  font-family: ui-monospace, 'SFMono-Regular', 'Menlo', 'Consolas', monospace;
+  font-size: 0.88em;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+  color: var(--fg);
+}

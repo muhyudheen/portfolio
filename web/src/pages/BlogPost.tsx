@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { getBlog } from '@/data/blogs';
 import type { Block } from '@/data/blogs';
@@ -6,6 +7,41 @@ import { useDocumentMeta } from '@/hooks/useDocumentMeta';
 import NotFound from './NotFound';
 import styles from './BlogPost.module.css';
 
+/**
+ * Lightweight inline renderer for a small Markdown subset used in post text:
+ * [label](url), **bold**, *italic*, and `inline code`. Plain text passes through
+ * untouched. A fresh regex per call keeps recursion (e.g. code inside bold) safe.
+ */
+function renderInline(text: string): ReactNode {
+  const re = /\[([^\]]+)\]\(([^)]+)\)|\*\*([^*]+)\*\*|\*([^*]+)\*|`([^`]+)`/g;
+  const nodes: ReactNode[] = [];
+  let last = 0;
+  let key = 0;
+  let match: RegExpExecArray | null;
+
+  while ((match = re.exec(text)) !== null) {
+    if (match.index > last) nodes.push(text.slice(last, match.index));
+    if (match[1] !== undefined) {
+      const href = match[2];
+      const external = /^https?:\/\//.test(href);
+      nodes.push(
+        <a key={key++} href={href} {...(external ? { target: '_blank', rel: 'noreferrer' } : {})}>
+          {renderInline(match[1])}
+        </a>,
+      );
+    } else if (match[3] !== undefined) {
+      nodes.push(<strong key={key++}>{renderInline(match[3])}</strong>);
+    } else if (match[4] !== undefined) {
+      nodes.push(<em key={key++}>{renderInline(match[4])}</em>);
+    } else if (match[5] !== undefined) {
+      nodes.push(<code key={key++} className={styles.inlineCode}>{match[5]}</code>);
+    }
+    last = re.lastIndex;
+  }
+  if (last < text.length) nodes.push(text.slice(last));
+  return nodes;
+}
+
 function renderBlock(block: Block, i: number) {
   switch (block.type) {
     case 'h2':
@@ -13,13 +49,13 @@ function renderBlock(block: Block, i: number) {
     case 'ul':
       return (
         <ul key={i} className={styles.ul}>
-          {block.items.map((item) => <li key={item}>{item}</li>)}
+          {block.items.map((item) => <li key={item}>{renderInline(item)}</li>)}
         </ul>
       );
     case 'ol':
       return (
         <ol key={i} className={styles.ol}>
-          {block.items.map((item) => <li key={item}>{item}</li>)}
+          {block.items.map((item) => <li key={item}>{renderInline(item)}</li>)}
         </ol>
       );
     case 'code':
@@ -30,7 +66,7 @@ function renderBlock(block: Block, i: number) {
       );
     case 'p':
     default:
-      return <p key={i}>{block.text}</p>;
+      return <p key={i}>{renderInline(block.text)}</p>;
   }
 }
 

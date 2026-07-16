@@ -92,6 +92,90 @@ Signed webhook  →  your endpoint` },
       { type: 'p', text: 'So that is Lawhook: a project born from boredom, built because regulatory monitoring is painful, and powered mostly by scrapers, webhooks, networking, and stubbornness. Until then, it is me, a terminal window, several cups of tea, and a growing collection of scraper scripts.' },
     ],
   },
+  {
+    slug: 'demand-driven-scheduler',
+    title: 'The Demand-Driven Scheduler — Prefrontal Cortex of Lawhook',
+    date: 'July 15, 2026',
+    dateTime: '2026-07-15',
+    excerpt:
+      'Lawhook was scraping every regulator every 15 minutes — burning money on updates nobody asked for. Here is the demand-driven scheduler that fixed it: a cheap "tick" that only scrapes what paying subscribers actually want.',
+    tags: ['Lawhook', 'Scheduler', 'Celery', 'Redis', 'Architecture'],
+    readingMinutes: 7,
+    blocks: [
+      { type: 'p', text: `My first idea of scraping timing of government sites backfired immediately. It scraped every 15 minutes, celery dispatched every single scraper every 15 minutes, at first i was using a test-free API key, so it didn't bothered me well, and of course i am doing everything through CLI and Swagger so i didn't saw the problem at that time. But when i built my frontend and the changes feed, i saw the problem, and it made me look into my billing as well, as expected a good money wasted. And mainly the change feed is flooded with "No regulatory updates or rulemaking activities....". Yep it was scraping every 15 minute and ai is processing every 15 minute.` },
+      { type: 'p', text: `As I realized the problem i began to debug. First I thought "I implemented a thing called diff, I mean every time a site is scraped, it will take snapshot of it and compare it to the previous snapshot, then why it is processing regularly?" The snapshots were changing every 15 minutes even when the regulator published absolutely nothing. That one is a story big enough for its own post, so I will come back to it. Short version: I fixed it, and the feed stopped lying to me.` },
+      { type: 'p', text: `And the 15 minute interval came into my mind. I mean why should i need to scrape every 15 minute if no one wants to scrape it at that point? That's how Demand-Driven Scheduler came into my mind. The idea is like this : if a jurisdiction don't have any subscribed users currently, scraping of the Regulators won't happen, until a user subscribed too it. So it just will sit there waiting for a sub. And the scraping interval. Say RBI, some users is subscribed to it. And every 15 minute scraper is dispatched. I mean the computational cost is whooosh 🚀. So I implemented different intervals for different tiers of users. Free get scraped every day. Starter get scraped every 6 hour. Pro get scraped every hour. And enterprise get scraped every 15 minute. So saving computational cost. 💵` },
+
+      { type: 'h2', text: 'So how does it actually work?' },
+      { type: 'p', text: `Here is where I hit the actual problem. Celery beat has a schedule. You write it once, it runs forever. "Run this task every 15 minutes." Fine.` },
+      { type: 'p', text: `But my cadence is not fixed. India might be free tier today — one guy, 24 hours. Tomorrow a pro user subscribes and suddenly India needs to be scraped every hour. Next week both of them leave and India should not be scraped at all.` },
+      { type: 'p', text: `A static schedule cannot do that. You cannot write "scrape India every hour" in a config file when "every hour" depends on who is subscribed right now. The schedule has to be recalculated, not written down.` },
+      { type: 'p', text: `So I flipped it. Instead of beat scheduling the scrapers, beat schedules **one cheap task** every 15 minutes. I call it the tick. The tick does not scrape anything. It just asks two questions:` },
+      { type: 'ol', items: ['Which jurisdictions have someone watching them, and how fast do they need it?', 'When did I last scrape each one?'] },
+      { type: 'p', text: `Then it does the math. \`now - last_scraped >= cadence\` means it is due. Dispatch the scrapers. Not due? Skip it, come back in 15 minutes.` },
+      { type: 'code', text: `Beat fires tick every 15 min
+        │
+        ▼
+   Who wants what?  ──────►  no subscribers → not in the list → never scraped
+        │
+        ▼
+   Due?  now - last_scraped >= cadence
+        │
+        ├── no  → skip (costs nothing)
+        │
+        └── yes → dispatch scrapers → stamp last_scraped` },
+      { type: 'p', text: `Cheap check often, expensive work rarely. The tick takes about 10 milliseconds when nothing is due. One database query and a few Redis reads. Fire that every 15 minutes forever and it costs you nothing. The expensive part — actually hitting the regulator, running the diff, calling the AI — only happens when someone is actually waiting for it.` },
+      { type: 'p', text: `The "when did I last scrape" part lives in Redis. One key per jurisdiction, \`last_scraped:IN\`, value is a unix timestamp. If the key does not exist, the jurisdiction has never been scraped, so it is immediately due. New jurisdiction, first subscriber, scrape it now, do not make them wait 24 hours for nothing.` },
+
+      { type: 'h2', text: 'The part that actually decides everything' },
+      { type: 'p', text: `This is the function. It answers question 1:` },
+      { type: 'code', text: `def get_jurisdiction_cadences() -> dict[str, int]:
+    """
+    Survey ALL active subscriptions and compute the fastest demanded
+    cadence per jurisdiction.
+    """
+    rows = (
+        db.query(Subscription.jurisdiction, User.tier)
+        .join(APIKey, Subscription.api_key_id == APIKey.id)
+        .join(User, APIKey.user_id == User.id)
+        .filter(
+            Subscription.is_active == True,
+            APIKey.is_active == True,
+            User.is_active == True,
+        )
+        .distinct()
+        .all()
+    )
+
+    cadences: dict[str, int] = {}
+    for jurisdiction, tier in rows:
+        # Unknown tier falls back to the SLOWEST cadence, never the fastest.
+        cadence = TIER_CADENCE_SECONDS.get(tier, DEFAULT_CADENCE_SECONDS)
+        current = cadences.get(jurisdiction)
+        if current is None or cadence < current:
+            cadences[jurisdiction] = cadence
+    return cadences` },
+      { type: 'p', text: `Four things in there that took me longer to figure out than they look:` },
+      { type: 'p', text: `**It takes no arguments.** My first instinct was to pass a user id. Wrong. This is not a request. Nobody is logged in. The scheduler is a background job looking at the entire database at once. And it has to be — scraping is shared. I scrape RBI once and every Indian subscriber gets it. So the cadence has to come from everybody's demand combined, not one person's.` },
+      { type: 'p', text: `**The \`min()\` is the whole design.** For each jurisdiction I keep the smallest cadence I find. Smallest = fastest = whoever paid the most. If one free user and one pro user are both watching India, India runs at pro speed. The pro user paid for that. The free user is just standing nearby.` },
+      { type: 'p', text: `**A jurisdiction with no subscribers is not a key in the dictionary.** Not zero, not null. It is simply absent. Absence means do not scrape. That is the entire demand signal and it required no extra code.` },
+      { type: 'p', text: `**The unknown tier falls back to the slowest, never the fastest.** If somebody's tier is garbage or I typo a tier name later, the worst that happens is they get scraped slowly. A bug should never hand out enterprise speed for free. Fail toward doing less.` },
+      { type: 'p', text: `The join is the boring part but it is where the tier actually lives. Subscription → API key → user → tier. The tier is on the user, not the key, because a person has one plan and many keys. That took me a whole rewrite to understand, but that is a different post.` },
+
+      { type: 'h2', text: 'The clever user problem' },
+      { type: 'p', text: `And one important thing. A free tier allows one active subscription. If you want US Jurisdiction along India then you have to pay. But a clever user can delete that and add a US sub. So like Monday India, Tuesday US.. like that. Rotating the one slot around and getting everything.` },
+      { type: 'p', text: `Except no. Because the cadence is not attached to the slot. It is attached to whoever is watching that jurisdiction right now.` },
+      { type: 'p', text: `So the free user rotates to US. If he is the only one there, US runs at 24 hours, because that is what free is. He rotated all the way to a full day of staleness. If a pro user is already watching US, then yes, US is running hourly and our free guy gets hourly data. But that is not him beating the system. That is the pro user paying for hourly and the free guy standing next to him. The pro user leaves, and the free guy is back to 24 hours immediately.` },
+      { type: 'p', text: `Rotating does not manufacture speed. You can shuffle that slot forever and every jurisdiction you land on still runs at whatever the paying subscribers asked for. Never faster because *you* showed up.` },
+      { type: 'p', text: `And I want to be honest about the hole here, because someone will find it. A free user riding a jurisdiction that a pro user keeps warm does get pro-speed data. That is real. I left it. What I sell is not exclusive freshness, it is *guaranteed* freshness. Pro guarantees hourly. Free guarantees daily. You cannot build a business on "maybe fast, depends who else is subscribed today" — the moment that pro user unsubscribes you are back to a day behind. If you actually need the speed, you pay for it.` },
+      { type: 'p', text: `I also never wrote a single line of anti-abuse code. No rotation detection, no cooldown, no "you cannot resubscribe for 24 hours" rule. The exploit just does not exist, because the architecture made it pointless. That is the part I liked.` },
+
+      { type: 'h2', text: 'Where it is now' },
+      { type: 'p', text: `This runs in production. Jurisdictions nobody is subscribed to are not scraped at all — not slower, not throttled, just not scraped. The tick fires every 15 minutes and mostly does nothing, in 10 milliseconds, for free.` },
+      { type: 'p', text: `[Lawhook is live here.](https://lawhook.dev) The [quickstart](https://lawhook.dev/docs) takes you from zero to a verified webhook in a few minutes.` },
+      { type: 'p', text: `Next post: the day a single line of debug output made Lawhook detect a thousand regulatory changes that never happened.` },
+    ],
+  },
 ];
 
 export function getBlog(slug: string): Blog | undefined {
