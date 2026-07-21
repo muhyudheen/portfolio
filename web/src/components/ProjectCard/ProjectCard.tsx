@@ -1,11 +1,12 @@
 import { Link } from 'react-router-dom';
-import type { Project } from '@/data/profile';
+import type { Project, ProjectStatus } from '@/data/profile';
 import styles from './ProjectCard.module.css';
 
-const STATUS_LABEL: Record<Project['status'], string> = {
+const STATUS_LABEL: Record<ProjectStatus, string> = {
   'in-progress': 'In progress',
   planned: 'Planned',
   shipped: 'Shipped',
+  'coming-soon': 'Coming soon',
 };
 
 function ArrowMark() {
@@ -32,10 +33,12 @@ export default function ProjectCard({ project, index }: { project: Project; inde
       <div className={styles.info}>
         <div className={styles.top}>
           <span className={styles.num}>{String(index + 1).padStart(2, '0')} / Project</span>
-          <span className={`${styles.status} ${styles[`s_${project.status}`]}`}>
-            <span className={styles.statusDot} />
-            {STATUS_LABEL[project.status]}
-          </span>
+          {project.status && (
+            <span className={`${styles.status} ${styles[`s_${project.status}`]}`}>
+              <span className={styles.statusDot} />
+              {STATUS_LABEL[project.status]}
+            </span>
+          )}
         </div>
 
         <div className={styles.mid}>

@@ -31,7 +31,7 @@ export const marquee: string[] = [
   'Predictive Modeling',
 ];
 
-export type ProjectStatus = 'in-progress' | 'planned' | 'shipped';
+export type ProjectStatus = 'in-progress' | 'planned' | 'shipped' | 'coming-soon';
 
 export type Project = {
   slug: string;
@@ -40,7 +40,8 @@ export type Project = {
   description: string;
   /** Longer multi-paragraph write-up shown on the project detail page. */
   overview?: string[];
-  status: ProjectStatus;
+  /** Omit to hide the status badge entirely. */
+  status?: ProjectStatus;
   year: string;
   stack: string[];
   highlights: string[];
@@ -61,7 +62,6 @@ export const projects: Project[] = [
       'The architecture launches jurisdiction scrapers at intervals (starting with SEBI in India and FCA in the UK), detects changes, processes the updates, and delivers them to user webhooks. With 190+ countries and many regulators each, the real engineering challenge is everything around the scraping.',
       'Security is the hard part: defending against SSRF, XSS, and Slowloris; handling TLS validation and SNI; and building rate limiting, retries, and secure webhook delivery. Every script goes through multiple review rounds — architecture discussion, implementation, an adversarial LLM pass to break it, fixes, manual review, and a final sweep — because the best vulnerability is the one you never deploy.',
     ],
-    status: 'in-progress',
     year: '2026',
     stack: ['Python', 'FastAPI', 'Scrapers', 'Webhooks', 'Networking', 'Security'],
     highlights: [
@@ -73,12 +73,33 @@ export const projects: Project[] = [
     links: [{ label: 'Read the story', href: '/blog/lawhook-regulatory-circulars' }],
   },
   {
+    slug: 'polymath',
+    name: 'Polymath',
+    tagline: 'A cross-domain scientific discovery engine.',
+    description:
+      'A research-intelligence platform that reads scientific literature across disciplines and surfaces non-obvious, testable cross-domain hypotheses no single researcher could find manually.',
+    overview: [
+      'Scientific breakthroughs disproportionately happen at the intersection of fields — but academia rewards deep specialisation and publishing inside silos. Researchers have no scalable way to notice when another discipline has already solved their problem. Polymath is built to close that gap.',
+      'It continuously ingests papers from PubMed, arXiv, Semantic Scholar, and IEEE into a Neo4j knowledge graph, embeds them with a scientific transformer (Specter2), and runs a Graph Neural Network that detects when two problems in different domains are structurally isomorphic — the same underlying mechanism, even when the vocabulary is completely different. That goes well beyond keyword or citation matching.',
+      'When it finds a bridge, an agentic LLM pipeline reasons about mechanism transfer, feasibility, and novelty, then synthesises a structured, testable hypothesis — scored on novelty, feasibility, and impact, with a full evidence trail through the citation graph and a one-click research brief ready to drop into a grant application.',
+      'Think of it as a research collaborator that has read every paper in every field, whose only job is to ask one question: has this exact problem already been solved — somewhere else?',
+    ],
+    status: 'coming-soon',
+    year: '2026',
+    stack: ['Python', 'PyTorch Geometric', 'LangGraph', 'Neo4j', 'Qdrant', 'FastAPI', 'RAG'],
+    highlights: [
+      'A Graph Neural Network detects structural isomorphism between problems across domains.',
+      'An agentic LLM pipeline synthesises testable hypotheses with novelty and feasibility scoring.',
+      'Every hypothesis is fully explainable via an evidence trail through the knowledge graph.',
+    ],
+    accent: 'purple',
+  },
+  {
     slug: 'weather-intel-bot',
     name: 'Weather Intel Bot',
     tagline: 'Backend-first weather intelligence assistant.',
     description:
       'A FastAPI-powered assistant that combines API integration, prompt design, and structured responses to turn raw weather data into concise decision support.',
-    status: 'in-progress',
     year: '2025',
     stack: ['Python', 'FastAPI', 'LLM', 'API Integration'],
     highlights: [
@@ -87,38 +108,6 @@ export const projects: Project[] = [
       'Foundation for agentic tool-calling workflows.',
     ],
     accent: 'blue',
-  },
-  {
-    slug: 'formula-1-pit-stop-prediction',
-    name: 'Formula 1 Pit-Stop Prediction',
-    tagline: 'Modeling race strategy as a prediction problem.',
-    description:
-      'A data-science project exploring telemetry-style features, model evaluation, and prediction workflows for Formula 1 pit-stop timing windows.',
-    status: 'in-progress',
-    year: '2025',
-    stack: ['Python', 'Pandas', 'Scikit-learn', 'XGBoost', 'Kaggle'],
-    highlights: [
-      'Frames pit-stop strategy as a supervised prediction problem.',
-      'Focuses on feature engineering and repeatable evaluation.',
-      'Built to improve with richer tire-degradation datasets.',
-    ],
-    accent: 'green',
-  },
-  {
-    slug: 'agentic-ai-portfolio',
-    name: 'Agentic AI Portfolio Assistant',
-    tagline: 'A portfolio that can answer for itself.',
-    description:
-      'A site assistant that answers visitor questions about my work and captures useful lead context — tool calling and secrets kept safely on the backend.',
-    status: 'planned',
-    year: '2026',
-    stack: ['Next.js', 'FastAPI', 'OpenAI', 'Tool Calling'],
-    highlights: [
-      'Keeps secrets and tool execution on the backend.',
-      'Separates portfolio content, chat telemetry, and lead capture.',
-      'Improves weekly from unknown-question logs.',
-    ],
-    accent: 'red',
   },
 ];
 
@@ -131,7 +120,7 @@ export const aboutBio: { text: string; emphasis?: string }[] = [
     text: "I'm a Machine Learning and Agentic AI specialist focused on the intersection of rigorous data science and intelligent autonomous systems. Through my dual-track studies in Data Science and Mechanical Engineering at IIT Madras, I build predictive models that bridge theoretical mathematics with automated AI pipelines.",
   },
   {
-    text: 'Recently, I engineered a high-speed Weather Intel Bot using FastAPI, developed predictive models for Formula 1 pit stops in Kaggle competitions, and architected machine learning pipelines designed to solve advanced fluid dynamics and Navier–Stokes equations.',
+    text: 'Recently, I engineered a high-speed Weather Intel Bot using FastAPI, and architected machine learning pipelines designed to solve advanced fluid dynamics and Navier–Stokes equations.',
   },
   {
     text: 'My approach is rooted in robust pipeline engineering — leveraging deep learning architectures and backend frameworks like FastAPI when complexity demands it, while maintaining strict evaluation metrics and AI-native workflows to accelerate development.',

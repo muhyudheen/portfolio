@@ -66,6 +66,11 @@
   background: rgba(0, 201, 107, 0.1);
   border-color: rgba(0, 201, 107, 0.28);
 }
+.s_coming-soon {
+  color: #a78bfa;
+  background: rgba(139, 92, 246, 0.12);
+  border-color: rgba(139, 92, 246, 0.3);
+}
 
 .mid {
   flex: 1;
@@ -213,6 +218,12 @@
 }
 .a_red .blob1 { background: #ef4444; }
 .a_red .blob2 { background: #fca5a5; }
+
+.a_purple {
+  background: linear-gradient(145deg, #12002e 0%, #2e0a5e 55%, #6d28d9 100%);
+}
+.a_purple .blob1 { background: #8b5cf6; }
+.a_purple .blob2 { background: #c4b5fd; }
 
 @media (max-width: 820px) {
   .card {

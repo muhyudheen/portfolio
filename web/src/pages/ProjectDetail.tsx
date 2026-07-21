@@ -8,6 +8,7 @@ const STATUS_LABEL = {
   'in-progress': 'In progress',
   planned: 'Planned',
   shipped: 'Shipped',
+  'coming-soon': 'Coming soon',
 } as const;
 
 export default function ProjectDetail() {
@@ -29,10 +30,12 @@ export default function ProjectDetail() {
 
       <header className={styles.header}>
         <div className={styles.metaRow}>
-          <span className={`${styles.status} ${styles[`s_${project.status}`]}`}>
-            <span className={styles.dot} />
-            {STATUS_LABEL[project.status]}
-          </span>
+          {project.status && (
+            <span className={`${styles.status} ${styles[`s_${project.status}`]}`}>
+              <span className={styles.dot} />
+              {STATUS_LABEL[project.status]}
+            </span>
+          )}
           <span className={styles.year}>{project.year}</span>
         </div>
 
