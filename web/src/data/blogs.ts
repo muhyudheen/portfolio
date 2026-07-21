@@ -176,6 +176,27 @@ Signed webhook  →  your endpoint` },
       { type: 'p', text: `Next post: the day a single line of debug output made Lawhook detect a thousand regulatory changes that never happened.` },
     ],
   },
+  {
+    slug: 'phantom-bug',
+    title: 'The Phantom Bug — The One Bug That Was Sucking Out My Credits',
+    date: 'July 22, 2026',
+    dateTime: '2026-07-22',
+    excerpt:
+      'A single line of "helpful" debug output — my own timestamp, sitting inside the hashed content — made Lawhook detect its own clock as a regulatory change and burn AI credits summarizing phantom updates. Here is the hunt for it.',
+    tags: ['Lawhook', 'Debugging', 'Hashing', 'RegTech'],
+    readingMinutes: 5,
+    blocks: [
+      { type: 'p', text: `So as a solo developer who just started his journey obviously needs to learn from his mistakes. And this was a big one. As i built my Lawhook and it's UI, after 2 days when i took a look at my feed page, it was cluttered. SEBI (India) has 5 records, but SEC has 377. SEC (USA) and MAS (Singapore) they are updating their regulations every 15 minute, i was like whaaat?? That can't be right. Regulators don't publish 75 times more often in one country than another. The number itself was the clue — something was wrong before i even opened the code. So i began my surgery... I don't know if it is the right word, but it is cool. And i found it. **I was hashing my own clock**. ⌚` },
+      { type: 'p', text: `Hashing your own clock? What are you telling, Shakespeare? So here is the thing. How diffing works is that after scraping, the backend turns the scraped content into snapshots which have headers and content, and it varies for different scraper classes. Each snapshot is compared to the previous one, and if there is a change, it is stored as a new change. But SEC making changes every 15 minute? No way. The diff was working — that's why changes were coming to the feed. The real question was *what* was changing. So i checked my snapshots. 📷` },
+      { type: 'p', text: `I diffed two consecutive snapshots. Everything was identical except one line:` },
+      { type: 'code', text: `Sources active: 2/2 | Scraped: 2026-07-09 12:38 UTC` },
+      { type: 'p', text: `A timestamp. My own. Some of my scrapers pulled from multiple sources, so i had added a little header at the top of the content — how many sources were active, and when it was scraped. Helpful for debugging. Except that header went *into the content that gets hashed*. And the timestamp changed every 15 minutes. So every single scrape produced a "new" hash, and the diff dutifully stored a change. The system was working perfectly. It correctly detected that the content changed — because the content genuinely did. The content was just my clock. 😑😑` },
+      { type: 'p', text: `And here's the part that actually stung. Every phantom change got sent to the AI to summarize. So my Gemini credits were being spent summarizing *my own infrastructure as if it were regulation*. One change even got graded **critical** — the AI reading "Sources active: 1/3 → 3/3" and confidently reporting a major regulatory event, which was really just me adding two scrapers. My compliance tool was alerting about my own deployments. Money, burned, for nothing. 💸` },
+      { type: 'p', text: `There's a lesson buried in here that i actually think is worth more than the bug itself: **the thing you hash should be exactly the thing you're watching, and nothing else.** The moment your own metadata leaks into the hashed content, you stop detecting the world and start detecting yourself. Proof — the scrapers that pulled specific fields out of JSON never had this problem. Only the ones that hashed a blob of text, including a header i wrote myself, detected their own author.` },
+      { type: 'p', text: `So what i did. I edited the headers — three lines deleted, the timestamp and source-count moved to a log where they belong instead of the content. Then came the cleanup: ~1000 junk records to delete without nuking the real ones. That was a mess of its own, a lot of careful SQL and double-checking so i didn't delete an actual regulatory change hiding in the pile. (One survivor: a real ASIC record about a $10.3M penalty on a super fund — exactly the kind of thing Lawhook is supposed to catch, sitting there buried under a thousand of my own timestamps.)` },
+      { type: 'p', text: `Big lesson for a solo dev: a single line of "helpful" debug output cost me an AI bill, a rate-limit ban against my own webhook endpoint, a thousand junk rows, and a feed that made my product look broken. It looked *helpful* in the code. That's the dangerous kind.` },
+    ],
+  },
 ];
 
 export function getBlog(slug: string): Blog | undefined {
