@@ -81,6 +81,8 @@ export default function BlogPost() {
 
   if (!blog) return <NotFound />;
 
+  const nextBlog = blog.next ? getBlog(blog.next) : undefined;
+
   return (
     <article className={`section container ${styles.page}`}>
       <div className={styles.shell}>
@@ -103,6 +105,13 @@ export default function BlogPost() {
         <div className={styles.content}>
           {blog.blocks.map(renderBlock)}
         </div>
+
+        {nextBlog && (
+          <Link to={`/blog/${nextBlog.slug}`} className={styles.nextPost}>
+            <span className={styles.nextLabel}>Next post →</span>
+            <span className={styles.nextTitle}>{nextBlog.title}</span>
+          </Link>
+        )}
 
         <BlogEngagement />
       </div>

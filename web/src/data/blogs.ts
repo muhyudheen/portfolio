@@ -19,6 +19,10 @@ export type Blog = {
   excerpt: string;
   tags: string[];
   readingMinutes: number;
+  /** Pinned posts sort to the top of the index, above newest-first. */
+  pinned?: boolean;
+  /** Slug of the follow-up post, shown as a "Next post" link at the end. */
+  next?: string;
   blocks: Block[];
 };
 
@@ -32,6 +36,8 @@ export const blogs: Blog[] = [
       'Lawhook is a regulatory monitoring project built around scrapers, webhooks, reliable delivery, and practical AI where it actually adds value.',
     tags: ['Lawhook', 'RegTech', 'Scrapers', 'Webhooks'],
     readingMinutes: 5,
+    pinned: true,
+    next: 'demand-driven-scheduler',
     blocks: [
       { type: 'p', text: 'A few weeks ago, I was hunting for a project that would actually stand out on my portfolio.' },
       { type: 'p', text: 'Like every developer who has spent too much time on X, Reddit, and YouTube, I first started building a deep research platform called Nexus. It had cool features, fancy AI ideas, and enough buzzwords to impress a VC for at least 12 seconds.' },
@@ -101,6 +107,7 @@ Signed webhook  →  your endpoint` },
       'Lawhook was scraping every regulator every 15 minutes — burning money on updates nobody asked for. Here is the demand-driven scheduler that fixed it: a cheap "tick" that only scrapes what paying subscribers actually want.',
     tags: ['Lawhook', 'Scheduler', 'Celery', 'Redis', 'Architecture'],
     readingMinutes: 7,
+    next: 'phantom-bug',
     blocks: [
       { type: 'p', text: `My first idea of scraping timing of government sites backfired immediately. It scraped every 15 minutes, celery dispatched every single scraper every 15 minutes, at first i was using a test-free API key, so it didn't bothered me well, and of course i am doing everything through CLI and Swagger so i didn't saw the problem at that time. But when i built my frontend and the changes feed, i saw the problem, and it made me look into my billing as well, as expected a good money wasted. And mainly the change feed is flooded with "No regulatory updates or rulemaking activities....". Yep it was scraping every 15 minute and ai is processing every 15 minute.` },
       { type: 'p', text: `As I realized the problem i began to debug. First I thought "I implemented a thing called diff, I mean every time a site is scraped, it will take snapshot of it and compare it to the previous snapshot, then why it is processing regularly?" The snapshots were changing every 15 minutes even when the regulator published absolutely nothing. That one is a story big enough for its own post, so I will come back to it. Short version: I fixed it, and the feed stopped lying to me.` },
@@ -173,7 +180,6 @@ Signed webhook  →  your endpoint` },
       { type: 'h2', text: 'Where it is now' },
       { type: 'p', text: `This runs in production. Jurisdictions nobody is subscribed to are not scraped at all — not slower, not throttled, just not scraped. The tick fires every 15 minutes and mostly does nothing, in 10 milliseconds, for free.` },
       { type: 'p', text: `[Lawhook is live here.](https://lawhook.dev) The [quickstart](https://lawhook.dev/docs) takes you from zero to a verified webhook in a few minutes.` },
-      { type: 'p', text: `Next post: the day a single line of debug output made Lawhook detect a thousand regulatory changes that never happened.` },
     ],
   },
   {
